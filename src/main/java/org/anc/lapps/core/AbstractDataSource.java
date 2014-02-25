@@ -62,14 +62,15 @@ public abstract class AbstractDataSource implements DataSource
 
       UTF8Reader reader = null;
       Data result = null;
-      long type = decode(key);
+      long type = getFileType(file);
       try
       {
          logger.debug("Loading {}", file.getPath());
+
          reader = new UTF8Reader(file);
          String text = reader.readString();
          reader.close();
-         result = DataFactory.text(text);
+         result = new Data(type, text);
       }
       catch (IOException e)
       {
@@ -117,21 +118,21 @@ public abstract class AbstractDataSource implements DataSource
    }
 
    /**
-    * Does some very basic string matching to determine the
-    * discriminator value from the <em>filename</em>.
+    * Determines the type of file based on it file extension.
     *
-    * @param filename a filename, with or without the path.
-    * @return a discriminator value based on the filename's
+    * @param file the file to check
+    * @return a discriminator value based on the file's
     * extension.
     */
-   protected long decode(String filename)
+   protected long getFileType(File file)
    {
+      String filename = file.getName();
       int dot = filename.lastIndexOf('.');
-      if (dot < 0)
+      if (dot <= 0)
       {
          return Types.TEXT;
       }
-      Long type = extensionMap.get(filename.substring(dot));
+      Long type = extensionMap.get(filename.substring(dot+1));
       if (type == null)
       {
          return Types.TEXT;

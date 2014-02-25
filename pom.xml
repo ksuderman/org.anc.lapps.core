@@ -10,10 +10,11 @@
     </parent>
     <groupId>org.anc.lapps</groupId>
     <artifactId>core</artifactId>
-    <version>0.2.0</version>
-    <name>LAPPS Core classes</name>
+    <version>0.2.1</version>
+    <name>ANC Core classes for lapps</name>
     <properties>
         <lapps.version>1.0.1</lapps.version>
+        <lapps.core.version>1.0.2</lapps.core.version>
     </properties>
     <dependencies>
         <dependency>
@@ -24,17 +25,17 @@
         <dependency>
             <groupId>org.lappsgrid</groupId>
             <artifactId>core</artifactId>
-            <version>${lapps.version}</version>
+            <version>${lapps.core.version}</version>
         </dependency>
         <dependency>
             <groupId>org.lappsgrid</groupId>
             <artifactId>discriminator</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.2</version>
         </dependency>
         <dependency>
             <groupId>org.anc</groupId>
             <artifactId>common</artifactId>
-            <version>3.1.1</version>
+            <version>3.2.0</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
