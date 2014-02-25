@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.anc.lapps</groupId>
     <artifactId>core</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1-SNAPSHOT</version>
     <name>LAPPS Core classes</name>
     <properties>
         <lapps.version>1.0.1</lapps.version>
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>org.anc</groupId>
             <artifactId>common</artifactId>
-            <version>3.1.1</version>
+            <version>3.2.0</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
