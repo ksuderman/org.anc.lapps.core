@@ -128,11 +128,11 @@ public abstract class AbstractDataSource implements DataSource
    {
       String filename = file.getName();
       int dot = filename.lastIndexOf('.');
-      if (dot < 0)
+      if (dot <= 0)
       {
          return Types.TEXT;
       }
-      Long type = extensionMap.get(filename.substring(dot));
+      Long type = extensionMap.get(filename.substring(dot+1));
       if (type == null)
       {
          return Types.TEXT;
