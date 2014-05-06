@@ -10,17 +10,19 @@
     </parent>
     <groupId>org.anc.lapps</groupId>
     <artifactId>core</artifactId>
-    <version>0.2.1</version>
-    <name>ANC Core classes for lapps</name>
+    <version>0.2.2</version>
+    <name>ANC Core classes for LAPPS</name>
     <properties>
-        <lapps.version>1.0.1</lapps.version>
-        <lapps.core.version>1.0.2</lapps.core.version>
+        <lapps.api.version>1.0.1</lapps.api.version>
+        <lapps.core.version>1.1.0</lapps.core.version>
+        <lapps.discriminator.version>1.2.3</lapps.discriminator.version>
+        <anc.common.version>3.4.0</anc.common.version>
     </properties>
     <dependencies>
         <dependency>
             <groupId>org.lappsgrid</groupId>
             <artifactId>api</artifactId>
-            <version>${lapps.version}</version>
+            <version>${lapps.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.lappsgrid</groupId>
@@ -30,12 +32,12 @@
         <dependency>
             <groupId>org.lappsgrid</groupId>
             <artifactId>discriminator</artifactId>
-            <version>1.2.2</version>
+            <version>${lapps.discriminator.version}</version>
         </dependency>
         <dependency>
             <groupId>org.anc</groupId>
             <artifactId>common</artifactId>
-            <version>3.2.0</version>
+            <version>${anc.common.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
