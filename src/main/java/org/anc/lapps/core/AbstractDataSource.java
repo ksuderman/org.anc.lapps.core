@@ -2,15 +2,13 @@ package org.anc.lapps.core;
 
 import org.anc.index.api.Index;
 import org.anc.io.UTF8Reader;
-import org.lappsgrid.api.Data;
-import org.lappsgrid.api.DataSource;
-import org.lappsgrid.core.DataFactory;
 import org.lappsgrid.discriminator.Constants;
 import org.lappsgrid.discriminator.DiscriminatorRegistry;
-import org.lappsgrid.discriminator.Types;
-import org.lappsgrid.discriminator.Uri;
-import static org.lappsgrid.discriminator.Helpers.type;
-
+import org.lappsgrid.serialization.*;
+import org.lappsgrid.serialization.Error;
+import org.lappsgrid.experimental.api.WebService;
+import org.lappsgrid.serialization.Error;
+import org.lappsgrid.serialization.response.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,16 +20,19 @@ import java.util.*;
 /**
  * @author Keith Suderman
  */
-public abstract class AbstractDataSource implements DataSource
+public abstract class AbstractDataSource implements WebService
 {
    private final Logger logger = LoggerFactory.getLogger(AbstractDataSource.class);
    protected Index index;
    protected Throwable savedException;
    private static final Map<String,String> extensionMap = new HashMap<String,String>();
+   private final String metadata;
 
-   public AbstractDataSource(Index index)
+   public AbstractDataSource(Index index, String metadata)
    {
       this.index = index;
+      this.metadata = metadata;
+
       synchronized(extensionMap) {
          if (extensionMap.size() == 0) {
             extensionMap.put("txt", Constants.Uri.TEXT);
@@ -43,6 +44,95 @@ public abstract class AbstractDataSource implements DataSource
       }
    }
 
+   public String execute(String input)
+   {
+      Map<String,Object> map = Serializer.parse(input, HashMap.class);
+      String discriminator = (String) map.get("discriminator");
+      if (discriminator == null)
+      {
+         return Serializer.toJson(new Error("No discriminator value provided."));
+      }
+
+      String result = null;
+      switch (discriminator)
+      {
+         case Constants.Uri.SIZE:
+            Data<Integer> sizeData = new Data<Integer>();
+            sizeData.setDiscriminator(Constants.Uri.OK);
+            sizeData.setPayload(index.keys().size());
+            result = Serializer.toJson(sizeData);
+            break;
+         case Constants.Uri.LIST:
+            java.util.List<String> keys = index.keys();
+            Object startValue = map.get("start");
+            if (startValue != null)
+            {
+               int start = Integer.parseInt(startValue.toString());
+               int end = index.keys().size();
+               Object endValue = map.get("end");
+               if (endValue != null)
+               {
+                  end = Integer.parseInt(endValue.toString());
+               }
+               keys = keys.subList(start, end);
+            }
+            Data<java.util.List<String>> listData = new Data<>();
+            listData.setDiscriminator(Constants.Uri.OK);
+            listData.setPayload(keys);
+            result = Serializer.toJson(listData);
+            break;
+         case Constants.Uri.GET:
+            String key = map.get("payload").toString();
+            if (key == null)
+            {
+               result = error("No key value provided");
+            }
+            else
+            {
+               File file = index.get(key);
+               if (file == null)
+               {
+                  result = error("No such file.");
+               }
+               else if (!file.exists())
+               {
+                  result = error("That file was not found on this server.");
+               }
+               else try
+               {
+                  UTF8Reader reader = new UTF8Reader(file);
+                  String content = reader.readString();
+                  reader.close();
+                  Data<String> stringData = new Data<String>();
+                  stringData.setDiscriminator(Constants.Uri.OK);
+                  stringData.setPayload(content);
+                  result = Serializer.toJson(stringData);
+               }
+               catch (IOException e)
+               {
+                  result = error(e.getMessage());
+               }
+
+            }
+            break;
+         case Constants.Uri.GETMETADATA:
+            Data<String> data = new Data<String>();
+            data.setDiscriminator(Constants.Uri.OK);
+            data.setPayload(metadata);
+            result = Serializer.toJson(data);
+            break;
+         default:
+            result = error("Invalid discriminator: " + discriminator);
+            break;
+      }
+      return result;
+   }
+
+   private String error(String message)
+   {
+      return Serializer.toJson(new Error(message));
+   }
+   /*
 //   @Override
    public long size(Data data)
    {
@@ -131,16 +221,17 @@ public abstract class AbstractDataSource implements DataSource
       int dot = filename.lastIndexOf('.');
       if (dot <= 0)
       {
-         return Uri.TEXT;
+         return Constants.Uri.TEXT;
       }
       String type = extensionMap.get(filename.substring(dot+1));
       if (type == null)
       {
-         return Uri.TEXT;
+         return Constants.Uri.TEXT;
       }
       return type;
    }
 
+   /*
    protected Data doQuery(String queryString)
    {
       List<String> list = new ArrayList<String>();
@@ -154,6 +245,7 @@ public abstract class AbstractDataSource implements DataSource
       }
       return DataFactory.index(collect(list));
    }
+   */
 
    /**
     * Takes a list of String objects and concatenates them into

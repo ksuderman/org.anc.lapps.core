@@ -16,6 +16,7 @@
         <lapps.api.version>2.0.0-SNAPSHOT</lapps.api.version>
         <lapps.core.version>2.0.0-SNAPSHOT</lapps.core.version>
         <lapps.discriminator.version>2.0.0-SNAPSHOT</lapps.discriminator.version>
+        <lapps.serialization.version>2.0.0-SNAPSHOT</lapps.serialization.version>
         <anc.common.version>3.5.0</anc.common.version>
         <anc.index.version>1.1.0</anc.index.version>
     </properties>
@@ -32,6 +33,11 @@
             <version>${lapps.core.version}</version>
         </dependency>
         -->
+        <dependency>
+            <groupId>org.lappsgrid.experimental</groupId>
+            <artifactId>serialization</artifactId>
+            <version>${lapps.serialization.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.lappsgrid</groupId>
             <artifactId>discriminator</artifactId>

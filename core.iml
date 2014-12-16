@@ -13,9 +13,14 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: org.lappsgrid.experimental:api:2.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.lappsgrid.experimental:serialization:2.0.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy-all:2.2.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.ivy:ivy:2.2.0" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.3.1" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.3.0" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.3.1" level="project" />
     <orderEntry type="library" name="Maven: org.lappsgrid:discriminator:2.0.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.lappsgrid:api:2.0.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy-all:2.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.anc:common:3.5.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: ch.qos.logback:logback-classic:1.0.11" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.0.11" level="project" />
