@@ -5,8 +5,12 @@ import org.anc.io.UTF8Reader;
 import org.lappsgrid.api.Data;
 import org.lappsgrid.api.DataSource;
 import org.lappsgrid.core.DataFactory;
+import org.lappsgrid.discriminator.Constants;
 import org.lappsgrid.discriminator.DiscriminatorRegistry;
 import org.lappsgrid.discriminator.Types;
+import org.lappsgrid.discriminator.Uri;
+import static org.lappsgrid.discriminator.Helpers.type;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,28 +27,41 @@ public abstract class AbstractDataSource implements DataSource
    private final Logger logger = LoggerFactory.getLogger(AbstractDataSource.class);
    protected Index index;
    protected Throwable savedException;
-   private static final Map<String,Long> extensionMap = new HashMap<String,Long>();
+   private static final Map<String,String> extensionMap = new HashMap<String,String>();
 
    public AbstractDataSource(Index index)
    {
       this.index = index;
       synchronized(extensionMap) {
          if (extensionMap.size() == 0) {
-            extensionMap.put("txt", Types.TEXT);
-            extensionMap.put("xml", Types.XML);
-            extensionMap.put("hdr", Types.XML);
-            extensionMap.put("json", Types.JSON);
-            extensionMap.put("jsonld", Types.JSON_LD);
+            extensionMap.put("txt", Constants.Uri.TEXT);
+            extensionMap.put("xml", Constants.Uri.XML);
+            extensionMap.put("hdr", Constants.Uri.XML);
+            extensionMap.put("json", Constants.Uri.JSON);
+            extensionMap.put("jsonld", Constants.Uri.JSON_LD);
          }
       }
    }
 
-   protected Data list()
+//   @Override
+   public long size(Data data)
    {
-      return new Data(Types.INDEX, collect(index.keys()));
+
+      return index.keys().size();
    }
 
-   protected Data get(String key)
+
+   @Override
+   public Data list(Data data)
+   {
+//
+//      String list = collect(index.keys().subList(start, end));
+//      return new Data(Uri.STRING_LIST, list);
+      return DataFactory.error("Not implemented");
+   }
+
+   @Override
+   public Data get(String key)
    {
       logger.info("Getting document for {}", key);
       File file = index.get(key);
@@ -62,7 +79,7 @@ public abstract class AbstractDataSource implements DataSource
 
       UTF8Reader reader = null;
       Data result = null;
-      long type = getFileType(file);
+      String type = getFileType(file);
       try
       {
          logger.debug("Loading {}", file.getPath());
@@ -89,32 +106,16 @@ public abstract class AbstractDataSource implements DataSource
       {
          return DataFactory.error(savedException.getMessage());
       }
-
-      Data result;
-      long type = query.getDiscriminator();
-      if (type == Types.QUERY)
+      long type = type(query);
+      if (type == Types.GET)
       {
-         logger.debug("Performing query: {}", query.getPayload());
-         result = doQuery(query.getPayload());
+         return get(query.getPayload());
       }
-      else if (type == Types.LIST)
+      if (type == Types.LIST)
       {
-         logger.debug("Listing data source.");
-         result = list();
+         return list(query);
       }
-      else if (type == Types.GET)
-      {
-         logger.debug("Performing get({}): {}", Types.GET, query.getPayload());
-         result = get(query.getPayload());
-      }
-      else
-      {
-         String name = DiscriminatorRegistry.get(type);
-         logger.warn("Unknown query type: {} ({})", name, type);
-         result = DataFactory.error("Unknown query type: " + name);
-      }
-      return result;
-
+      return DataFactory.error("Unsupported operation.");
    }
 
    /**
@@ -124,18 +125,18 @@ public abstract class AbstractDataSource implements DataSource
     * @return a discriminator value based on the file's
     * extension.
     */
-   protected long getFileType(File file)
+   protected String getFileType(File file)
    {
       String filename = file.getName();
       int dot = filename.lastIndexOf('.');
       if (dot <= 0)
       {
-         return Types.TEXT;
+         return Uri.TEXT;
       }
-      Long type = extensionMap.get(filename.substring(dot+1));
+      String type = extensionMap.get(filename.substring(dot+1));
       if (type == null)
       {
-         return Types.TEXT;
+         return Uri.TEXT;
       }
       return type;
    }
